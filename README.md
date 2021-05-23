@@ -1,25 +1,32 @@
-# New Project
+# Problem: CSS module className not reflecting in build js file
 
-> ✨ Bootstrapped with Create Snowpack App (CSA).
+NODE version: 15.14.0
+use `@snowpack/plugin-webpack` to bundle 
 
-## Available Scripts
-
-### npm start
-
-Runs the app in the development mode.
-Open http://localhost:8080 to view it in the browser.
-
-The page will reload if you make edits.
-You will also see any lint errors in the console.
-
-### npm run build
-
-Builds a static copy of your site to the `build/` folder.
-Your app is ready to be deployed!
-
-**For the best production performance:** Add a build bundler plugin like "@snowpack/plugin-webpack" to your `snowpack.config.js` config file.
-
-### npm test
-
-Launches the application test runner.
-Run with the `--watch` flag (`npm test -- --watch`) to run in interactive watch mode.
+## How to reproduce 
+1. download the repo
+2. `yarn && yarn start` to see it's just "Hello World" in yellow text color with black background 
+where black background color is global css, and yellow text is in `App.module.css` 
+3. `yarn build` to build, notice in `/build/css/styles[hash].css` both black and yellow properties is here
+4. use a server application to open the `/build/` as root, the yellow h1 is now showing
+5. check the `/js/index[hash].js` file, as below, the jsx is converted into this, though the `u` is correctly creating a random classname, but the `createElement` is not 
+```
+function (e, t, r) {
+  "use strict";
+  r.r(t);
+  var n = r(0),
+    o = (n.c.useEffect, n.c.useState, r(1)),
+    u = { _yellowText_1crdi_1: "Fo01xQr36oH9LiM0VHSA7" }; <--------------- CHANGED
+  var c = function () {
+    return n.c.createElement(
+      "h1",
+      { className: u.yellowText },    <--------------- UNCHANGED
+      "Hello World"
+    );
+  };
+  o.a.render(
+    n.c.createElement(n.c.StrictMode, null, n.c.createElement(c, null)),
+    document.getElementById("root")
+  );
+},
+```
